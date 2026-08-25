@@ -1,0 +1,20 @@
+SPL rules as written, one per tuning scenario:
+
+1. Egress volume - SRV-BKP-01
+index=alon sourcetype=proxy
+| eval hour=tonumber(strftime(_time,"%H"))
+| where NOT (hour>=1 AND hour<3)
+| stats sum(bytes_out) as total by src_host
+| where total > 10000000000
+
+2. Lockout storm - svc_sql
+(Logic as written, not a runnable SPL string in the source:)
+Look up recent help-desk tickets for the same user before alerting on the
+account lockout storm.
+
+3. Mass execution - ccmexec
+index=alon sourcetype=winevent EventCode=4688 cmdline!="ccmexec.exe /deploy KB5041585"
+| bin _time span=10m
+
+Note: "index=alon" refers to the training dataset's index name, not a real
+company/environment identifier.

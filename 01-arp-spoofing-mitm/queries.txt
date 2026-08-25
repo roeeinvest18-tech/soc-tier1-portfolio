@@ -1,0 +1,20 @@
+Wireshark display filters used, in the order applied during the investigation:
+
+1. arp.opcode == 2
+   -> Isolate ARP replies; surfaced "IP duplicate" warnings.
+
+2. eth.dst == aa:bb:cc:00:00:20
+   -> Map every destination that received ARP traffic from the suspect MAC
+      (victim scope).
+
+3. arp.opcode == 2 and arp.src.proto_ipv4 == 192.168.1.1
+   -> Confirm two different MAC addresses claiming to own the gateway IP.
+
+4. arp.opcode == 1 and arp.dst.proto_ipv4 == 192.168.1.1
+   -> Isolate genuine ARP requests for the gateway, to cross-reference
+      against replies and separate legitimate unicast replies from
+      unsolicited ones.
+
+Note: aa:bb:cc:00:00:20 and 192.168.1.1 are the values as recorded in the
+original lab notes (a private lab subnet / placeholder MAC range, not a real
+production network).

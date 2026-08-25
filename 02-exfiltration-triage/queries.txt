@@ -1,0 +1,20 @@
+Wireshark analysis steps used, in order:
+
+1. Statistics -> Conversations -> TCP, sorted by Bytes (descending)
+   -> Get a traffic-volume overview of the whole capture before drilling
+      into any single conversation; identify the outlier by byte count.
+
+2. tcp.stream eq 131
+   -> Isolate the single outlier conversation for detailed inspection.
+
+Observation (not a filter, a manual read of the Info column):
+   Frame 754 in that stream referenced "upload.file-anon.com" in cleartext
+   metadata, which identified the destination as a file-upload service.
+
+IOCs extracted:
+   - 203.0.113.99
+   - upload.file-anon.com
+   - tcp.stream eq 131 (reference for pulling the full session later)
+
+Note: 203.0.113.99 is an RFC 5737 documentation/example IP range used in the
+source lab capture, not a real-world address.
