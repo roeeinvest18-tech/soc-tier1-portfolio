@@ -1,20 +1,25 @@
-Wireshark display filters used, in the order applied during the investigation:
+Wireshark filters recorded in the original analysis:
 
 1. arp.opcode == 2
-   -> Isolate ARP replies; surfaced "IP duplicate" warnings.
+   Review ARP replies and duplicate-IP warnings.
 
 2. eth.dst == aa:bb:cc:00:00:20
-   -> Map every destination that received ARP traffic from the suspect MAC
-      (victim scope).
+   ORIGINAL FILTER — its previous explanation incorrectly described source
+   traffic. eth.dst selects the destination MAC, not the source.
+   This cannot validate the claimed victim scope.
+
+   Proposed source-traffic filter, pending PCAP verification:
+   arp.opcode == 2 and eth.src == <verified_suspect_mac>
+   The angle-bracket value is a placeholder, not runnable syntax.
+   Review distinct eth.dst and ARP target addresses; account for broadcast
+   delivery before interpreting recipients as poisoned endpoints.
 
 3. arp.opcode == 2 and arp.src.proto_ipv4 == 192.168.1.1
-   -> Confirm two different MAC addresses claiming to own the gateway IP.
+   Review MAC addresses claiming the gateway IP.
 
 4. arp.opcode == 1 and arp.dst.proto_ipv4 == 192.168.1.1
-   -> Isolate genuine ARP requests for the gateway, to cross-reference
-      against replies and separate legitimate unicast replies from
-      unsolicited ones.
+   Review requests for the gateway and compare times/targets with replies.
 
-Note: aa:bb:cc:00:00:20 and 192.168.1.1 are the values as recorded in the
-original lab notes (a private lab subnet / placeholder MAC range, not a real
-production network).
+The original notes record aa:bb:cc:00:00:20 and 192.168.1.1 as lab values.
+The PCAP is not published; the suspect MAC and corrected scope filter
+have not been independently verified.

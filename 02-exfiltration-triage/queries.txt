@@ -9,9 +9,10 @@ Wireshark analysis steps used, in order:
 
 Observation (not a filter, a manual read of the Info column):
    Frame 754 in that stream referenced "upload.file-anon.com" in cleartext
-   metadata, which identified the destination as a file-upload service.
+   metadata, which suggested a file-upload-style destination. Its actual function,
+   approval status, and reputation were not established.
 
-IOCs extracted:
+Training indicators and session references:
    - 203.0.113.99
    - upload.file-anon.com
    - tcp.stream eq 131 (reference for pulling the full session later)

@@ -1,53 +1,22 @@
-# Interview Notes — ARP Spoofing / MITM Detection
+# Interview Notes — ARP Spoofing / MITM Indicators
 
-**What happened?**
-While reviewing a packet capture from a small internal network, I noticed
-ARP replies flagged with an IP-duplicate warning for the gateway address.
+**What triggered the review?**
+A self-directed training-capture review, not a SIEM alert.
 
-**What was the initial alert?**
-There wasn't one — this was a self-directed capture review, not a triggered
-SIEM/IDS alert. I found the anomaly by filtering ARP traffic directly.
+**What did I check?**
+ARP replies, duplicate gateway-IP claims, and request/reply timing. The original analysis describes unsolicited replies at roughly five-second intervals.
 
-**What did I check first?**
-`arp.opcode == 2` to see all ARP replies and confirm the duplicate-IP
-warning was real and not a one-off glitch.
+**What is the assessment?**
+Suspected ARP cache poisoning. The pattern warrants escalation, but does not prove interception or credential theft.
 
-**What evidence mattered most?**
-Two different MAC addresses both answering for `192.168.1.1`, and — more
-importantly — dozens of ARP replies with no matching prior request
-(unsolicited replies). A single duplicate-IP warning could be a
-misconfiguration; a pattern of unsolicited replies at a fixed ~5-second
-interval is not.
+**What needs correction?**
+The recorded scope filter uses eth.dst while its explanation described source traffic. I would verify the suspect MAC in the PCAP, filter eth.src, and examine recipients before claiming a victim count.
 
-**What did I rule out?**
-A simple IP conflict from misconfiguration (e.g., two devices manually
-assigned the same static IP by mistake). That would produce occasional
-duplicate warnings but not a steady stream of unsolicited replies impersonating
-the gateway specifically.
+**What alternatives remain?**
+Misconfiguration, legitimate gateway redundancy, or another source of conflicting ARP claims. Cadence alone does not rule them out.
 
-**What was my conclusion?**
-Active ARP cache poisoning against the default gateway, confirmed at the
-packet level. I could not confirm downstream impact (e.g., whether traffic
-was actually intercepted or credentials captured) from this capture alone.
+**What would I hand over?**
+Capture time window, verified conflicting MAC/IP claims, example packet pairs, affected endpoints if verified, and a request for network/IR validation under the approved workflow.
 
-**Would I escalate?**
-Yes. A confirmed MITM condition against a gateway address affecting
-multiple hosts is outside Tier 1 scope to resolve — it needs the
-network/IR team to physically locate and isolate the source.
-
-**Why?**
-Because ARP poisoning at the gateway can expose all traffic from the
-affected hosts to interception, and the attacker's device needs to be
-located on the physical/switch layer, which is beyond log/packet analysis
-alone.
-
-**Question an interviewer might ask, and how I'd answer:**
-- *"How do you tell a real ARP conflict from a misconfiguration?"* — Look for
-  a pattern: repeating, unsolicited replies (no matching request) from one
-  MAC impersonating another device's IP, versus a single sporadic conflict.
-- *"What would you have done differently if you had live network access
-  instead of just a capture?"* — Cross-reference the impersonating MAC
-  against the switch's CAM table / DHCP lease table to physically locate the
-  device, and consider Dynamic ARP Inspection (DAI) as a longer-term
-  mitigation — though I'd flag that as a recommendation, not something I
-  implemented in this exercise.
+**What can the published work prove?**
+It shows my documented method and the review of its limitations. The original PCAP is not included, so readers cannot independently reproduce the finding.

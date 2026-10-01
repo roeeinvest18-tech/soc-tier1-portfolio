@@ -10,7 +10,7 @@ A one-line escalation note: "Multiple suspicious activities. Triage." No IOCs or
 Statistics → Conversations → TCP sorted by bytes. With no starting IOC, this quickly showed which conversations were outliers before I looked at individual packets.
 
 **What evidence mattered most?**
-The byte-volume outlier and the destination domain name (`upload.file-anon.com`) visible in the stream metadata. The domain name pattern was consistent with an external file-upload service and was unusual for routine business traffic.
+The byte-volume outlier and the destination domain name (`upload.file-anon.com`) visible in the stream metadata. The name suggested a file-upload service, but I did not establish its actual function, approval status, or reputation.
 
 **What did I rule out?**
 I did not rule out legitimate-but-unsanctioned use. The capture alone could not distinguish an employee using a personal file-sharing site from malicious exfiltration, so I recorded that as "cannot be determined" rather than assuming intent.
@@ -19,7 +19,7 @@ I did not rule out legitimate-but-unsanctioned use. The capture alone could not 
 A suspicious outbound transfer consistent with exfiltration: large volume, encrypted traffic, and an external file-upload-style destination. The capture did not confirm malicious intent by itself.
 
 **Would I escalate?**
-Yes, severity 4/5 in the exercise's rating scheme. It was worth prompt follow-up, but the capture alone did not show enough to call it a critical incident.
+Yes, for validation of a suspected unauthorized transfer. I would use the organisation's severity matrix after checking asset criticality, data sensitivity, and whether the transfer was ongoing. The published notes do not support a numeric severity.
 
 **Why?**
 The destination and transfer volume were enough to require more context, such as asset ownership, business justification, and DLP or proxy logs.

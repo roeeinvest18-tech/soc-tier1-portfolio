@@ -1,4 +1,4 @@
-SPL rules as written, one per tuning scenario:
+Recorded SPL search fragments and conceptual logic — not validated rules:
 
 1. Egress volume - SRV-BKP-01
 index=alon sourcetype=proxy
@@ -18,3 +18,12 @@ index=alon sourcetype=winevent EventCode=4688 cmdline!="ccmexec.exe /deploy KB50
 
 Note: "index=alon" refers to the training dataset's index name, not a real
 company/environment identifier.
+
+Validation notes:
+- #1 sums over the chosen search range and excludes the maintenance hours
+  for ALL src_host values. Verify fields, byte units, search time zone,
+  and intended aggregation window before use.
+- #2 has no executable implementation or published ticket schema.
+- #3 has no stats count, alert threshold, or SYSTEM-context condition.
+  bin alone changes time buckets; it does not detect mass execution.
+- No measured noise reduction or production validation is published.

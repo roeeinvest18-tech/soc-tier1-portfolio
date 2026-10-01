@@ -1,29 +1,22 @@
-# Interview Notes — SIEM Detection Rule Tuning
+# Interview Notes — Detection Logic Review
 
-**What happened?**
-I worked through several detection-tuning scenarios. For each one, I identified the field that should separate expected from suspicious activity, wrote the SPL logic, and then checked what the rule could still miss.
+**What did I do?**
+Reviewed training search fragments and proposals for egress, lockouts, and process creation, focusing on noise suppression and coverage risks.
 
-**What was the initial alert?**
-Not applicable — this was a detection-tuning exercise rather than an incident investigation.
+**What is complete?**
+The documented logic review. These are not validated production rules, and I do not claim measured false-positive reduction.
 
-**What did I check first?**
-For each scenario, I first asked what information actually separates the normal case from the suspicious case. For the egress rule, that was the maintenance window. For the mass-execution rule, it was the known-good SYSTEM deployment command line.
+**What did the review identify?**
+The egress query excludes hours for all hosts and aggregates over the selected search range. The lockout scenario has no executable SPL. The process fragment bins time but has no event count, threshold, or SYSTEM condition.
 
-**What evidence mattered most?**
-The trade-off created by each tuning decision. Reducing noise can also reduce visibility, so I documented what the rule could miss after each change.
+**What would I do next?**
+Verify the actual fields, search window and time zone; complete the rule logic; test benign and suspicious cases; record output counts and failures; submit for detection-owner review.
 
-**What did I rule out?**
-A broad SYSTEM-context exclusion for the mass-execution rule. It would reduce the noise, but it could also hide attacker activity running as SYSTEM.
+**Why not suppress based only on a ticket?**
+A ticket is enrichment. It needs to match the account, time, approved activity, and incident context; it does not prove the alert is benign.
 
-**What was my conclusion?**
-Two rules (egress volume, mass execution) have a documented false-negative risk. The lockout rule has a dependency risk because its logic relies on an external ticketing system.
+**Why not exclude all SYSTEM events?**
+That would hide malicious activity running in the same context. Even a narrow command-line exclusion needs validation and review.
 
-**Would I escalate?**
-Not applicable as an incident decision. The tuning output would be reviewed by whoever owns the detection content before any exclusions are deployed.
-
-**Why?**
-The reviewer needs to understand both what the tuning improves and what visibility it gives up.
-
-**Questions I would expect in an interview:**
-- *"Isn't excluding the maintenance window risky?"* — Yes. It reduces the backup-related noise, but an attacker who exfiltrates during that window could be missed by this rule. I would want additional detection coverage for that period.
-- *"Why not exclude all SYSTEM process creation?"* — Because that would be too broad. A narrower exclusion for the specific known-good deployment keeps more visibility while still addressing the original noise.
+**What is the Tier 1 deliverable?**
+A review package with the proposed changes, required fields, test evidence when available, and remaining blind spots. Deployment follows approved change control.
